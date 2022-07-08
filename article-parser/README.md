@@ -1,0 +1,1 @@
+This directory contains code for parsing the DBpedia and Wikipedia pages for images.
