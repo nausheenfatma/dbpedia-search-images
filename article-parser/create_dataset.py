@@ -11,10 +11,12 @@ def save_batch(output, dir_path):
     count = 0
     for input_dict in tqdm(output):
         count += 1
+        image_path = os.path.join(dir_path, f'{count}.jpg')
         try:
-            save_image(input_dict, os.path.join(dir_path, f'{count}.jpg'))
+            save_image(input_dict, image_path)
         except:
             print(f'Issue saving image number {count}')
+            os.system(f'rm {image_path}')
     return None
 
 
