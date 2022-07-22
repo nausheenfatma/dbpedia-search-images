@@ -1,5 +1,6 @@
 
 import os
+import json
 import argparse
 from tqdm import tqdm
 
@@ -9,14 +10,33 @@ from rdflib import sparqlEndpoint
 
 def save_batch(output, dir_path):
     count = 0
+    save_json = dict()
+    error_json = dict()
     for input_dict in tqdm(output):
+        saved = True
         count += 1
+        # breakpoint()
         image_path = os.path.join(dir_path, f'{count}.jpg')
         try:
             save_image(input_dict, image_path)
         except:
             print(f'Issue saving image number {count}')
             os.system(f'rm {image_path}')
+            saved = False
+        if saved:
+            # save json
+            save_json[image_path] = {
+                'URI': input_dict['e']['value'],
+                'Image-URI': input_dict['image']['value'],
+            }
+        else:
+            error_json[image_path] = {
+                'URI': input_dict['e']['value'],
+                'Image-URI': input_dict['image']['value'],
+            }
+    json.dump(save_json, open(os.path.join(dir_path, 'info_dict.json'), 'w'))
+    json.dump(error_json, open(os.path.join(dir_path, 'error_dict.json'), 'w'))
+    print(f'{len(save_json)} images saved to {dir_path}...')
     return None
 
 
@@ -67,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--query',
         '-q',
-        default='''select ?e ?image where { ?e dbo:thumbnail ?image . } LIMIT 100''',
+        default='''select ?e ?image where { ?e rdf:type dbo:Bird  . ?e dbo:thumbnail ?image .}''',
         help='query string',
     )
     parser.add_argument(
