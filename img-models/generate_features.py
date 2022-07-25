@@ -59,7 +59,7 @@ class ImgFeatures():
             raise NotImplementedError()
         self.model = torch.nn.Sequential(*list(model.children())[:-1])
         self.model.eval()
-        return self.model
+        return self.model.to(self.device)
 
     def get_features(self, image_path):
         """
@@ -67,7 +67,7 @@ class ImgFeatures():
         features
         """
         assert os.path.isfile(image_path)
-        img_tensor = self.preprocess_img(image_path)
+        img_tensor = self.preprocess_img(image_path).to(self.device)
         return self.model(img_tensor).squeeze()
 
 

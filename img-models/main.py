@@ -30,7 +30,7 @@ if os.path.isdir(args.p):
         if '.json' not in image_path:
             # Ignoring the JSON files saved
             feats = img_feats.get_features(image_path)
-            embeds_dict[image_path] = feats
+            embeds_dict[image_path] = feats.detach()
     embeddings_path = os.path.join(args.p, 'embeddings.npy')
     np.save(embeddings_path, embeds_dict)
     print(f'Saved embeddings to {embeddings_path}...')
