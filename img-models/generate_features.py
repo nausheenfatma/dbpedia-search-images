@@ -9,33 +9,33 @@ from torchvision import transforms, models
 
 
 class ImgFeatures():
-    def __init__(self, img_path, model_name='resnet50'):
-        assert os.path.isfile(img_path)
-        self.img_path = img_path
+    def __init__(self, model_name='resnet50'):
+        # assert os.path.isfile(img_path)
+        # self.img_path = img_path
         self.model_name = model_name
         self.data_transforms = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ])
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f'Using {self.device}!')
         self.get_model()
 
-    def load_img(self):
+    def load_img(self, image_path):
         """
         Given image's path, load it
         """
-        image = Image.open(self.img_path)
+        image = Image.open(image_path).convert('RGB')
         return image
 
-    def preprocess_img(self):
+    def preprocess_img(self, image_path):
         """
         Given the image, convert it to torch tensor, and make it model's
         compatible
         """
-        image_pil = self.load_img()
+        image_pil = self.load_img(image_path)
         image = self.data_transforms(image_pil)
         return image.unsqueeze(dim=0)
 
@@ -61,16 +61,17 @@ class ImgFeatures():
         self.model.eval()
         return self.model
 
-    def get_features(self):
+    def get_features(self, image_path):
         """
         Given the image tensor, pass it through a pre-trained model and get the
         features
         """
-        img_tensor = self.preprocess_img()
+        assert os.path.isfile(image_path)
+        img_tensor = self.preprocess_img(image_path)
         return self.model(img_tensor).squeeze()
 
 
 if __name__ == '__main__':
     input_img_path = "/Volumes/Storage/IIIT-H/DIP_Project_data/google-images-download/images/beer_labels/6.jockeyclub_0001.jpg"
-    feats_class = ImgFeatures(img_path=input_img_path)
-    feats = feats_class.get_features()
+    feats_class = ImgFeatures()
+    feats = feats_class.get_features(image_path=input_img_path)

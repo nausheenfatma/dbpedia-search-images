@@ -15,12 +15,10 @@ def save_batch(output, dir_path):
     for input_dict in tqdm(output):
         saved = True
         count += 1
-        # breakpoint()
         image_path = os.path.join(dir_path, f'{count}.jpg')
         try:
             save_image(input_dict, image_path)
         except:
-            print(f'Issue saving image number {count}')
             os.system(f'rm {image_path}')
             saved = False
         if saved:

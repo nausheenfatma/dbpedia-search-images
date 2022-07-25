@@ -1,6 +1,8 @@
 
 import os
 import argparse
+import numpy as np
+from tqdm import tqdm
 
 from generate_features import ImgFeatures
 
@@ -17,6 +19,21 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-img_feats = ImgFeatures(img_path=args.p, model_name=args.m)
-feats = img_feats.get_features()
-print(f'Features of shape {feats.shape} generated for {os.path.basename(args.p)}!')
+img_feats = ImgFeatures(model_name=args.m)
+
+if os.path.isdir(args.p):
+    images_path = os.listdir(args.p)
+    embeds_dict = dict()
+    print(f'Processind directory with {len(images_path)} images')
+    for path in tqdm(images_path, desc="Generating Embeddings"):
+        image_path = os.path.join(args.p, path)
+        if '.json' not in image_path:
+            # Ignoring the JSON files saved
+            feats = img_feats.get_features(image_path)
+            embeds_dict[image_path] = feats
+    embeddings_path = os.path.join(args.p, 'embeddings.npy')
+    np.save(embeddings_path, embeds_dict)
+    print(f'Saved embeddings to {embeddings_path}...')
+else:
+    feats = img_feats.get_features(args.p)
+    print(f'Features of shape {feats.shape} generated for {os.path.basename(args.p)}!')
