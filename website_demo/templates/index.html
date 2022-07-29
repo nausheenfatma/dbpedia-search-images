@@ -15,6 +15,9 @@
     <div style="flex:1;padding-left:5px;">
         <p>Ranked Images (first image is the query image)</p>
     </div>
+    <div style="flex:1;padding-left:5px;padding-right:5px">
+        <p>Article URI</p>
+    </div>
 </div>
 
 {% for i in range(iteration) %}
@@ -25,6 +28,10 @@
     {% set image_name = image_list[i] %}
     <div style="flex:1;padding-right:5px;padding-left:35px">
         <img src="{{url_for('static', filename=image_name)}}"></img>
+    </div>
+    {% set url = uris_list[i]%}
+    <div>
+        <p><a href="{{url}}">{{url}}</a></p>
     </div>
 </div>
 {% endfor %}

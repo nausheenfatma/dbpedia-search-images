@@ -21,12 +21,13 @@ ranked_list = RankedList()
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    images_path = ranked_list.generate_results(5000)[:10]
-    images_path = ["/".join(item.split('/')[-2:]) for item in images_path]
+    images_ranked_list, uris_ranked_list = ranked_list.generate_results(10000)
+    images_path = ["/".join(item.split('/')[-2:]) for item in images_ranked_list]
     return render_template(
         'index.html',
         image_list=images_path,
-        iteration = len(images_path)
+        uris_list=uris_ranked_list,
+        iteration = len(images_path),
     )
 
 
