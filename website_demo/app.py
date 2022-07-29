@@ -1,10 +1,8 @@
 
-import os
 import argparse
 from flask import Flask, render_template, request
 
 from kg_query.main import RankedList
-from kg_query.query_embds import QueryEmbds
 
 
 parser = argparse.ArgumentParser()
@@ -21,7 +19,15 @@ ranked_list = RankedList()
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    images_ranked_list, uris_ranked_list = ranked_list.generate_results(10000)
+    if 'submit' in request.form.keys():
+        query_number = int(request.form['query'])
+        images_ranked_list, uris_ranked_list = ranked_list.generate_results(
+            query_number
+        )
+    else:
+        images_ranked_list, uris_ranked_list = ranked_list.generate_results(
+            10000
+        )
     images_path = ["/".join(item.split('/')[-2:]) for item in images_ranked_list]
     return render_template(
         'index.html',
