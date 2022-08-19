@@ -119,7 +119,7 @@ class RankedList():
                     break
         return uri_list
 
-    def generate_results(self, query_index):
+    def generate_results(self, query_index, num_img=10):
         print('Querying the embeddings...')
         queryembd = QueryEmbds(self.embeddings)
         _, ind = queryembd.query(self.embeddings[query_index])
@@ -129,9 +129,9 @@ class RankedList():
         for pred in ind[0]:
             images_ranked_list.append(self.img_paths[pred])
             uris_ranked_list.append(self.uris_list[pred])
-        return images_ranked_list[:10], uris_ranked_list[:10]
+        return images_ranked_list[:num_img], uris_ranked_list[:num_img]
 
-    def generate_img_results(self, image_path):
+    def generate_img_results(self, image_path, num_img=10):
         print('Querying the embeddings from the image loaded...')
         queryembd = QueryEmbds(self.embeddings)
         print('Generating embeddings for the query image...')
@@ -143,7 +143,7 @@ class RankedList():
         for pred in ind[0]:
             images_ranked_list.append(self.img_paths[pred])
             uris_ranked_list.append(self.uris_list[pred])
-        return images_ranked_list[:10], uris_ranked_list[:10]
+        return images_ranked_list[:num_img], uris_ranked_list[:num_img]
 
 
 if __name__ == '__main__':
