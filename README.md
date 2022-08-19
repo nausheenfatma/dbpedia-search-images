@@ -26,20 +26,17 @@ python article-parser/create_dataset.py --save_dir /path/to/directory/to/save/im
 
 ## Instructions to generate embeddings for images
 
-### Generate features for an images saved at a location
-Use the following command to run `main.py` and generate features for an image.
+### Generate features for images saved in a directory
+Use the following command to run `main.py` and generate features for a group of images in a directory.
 
 ```python
-python img-models/main.py -p /path/to/image.jpg -m resnet50
+python img_models/main.py -p /path/to/image/directory -m resnet50
 ```
 
 `main.py` accepts two arguments
-- `p`: Path to the image for which the features are to be generated
+- `p`: Path to the directory of images for which the features are to be generated
 - `m`: Name of the model to load for generating the features. Currently the options are: `resnet18`, `resnet50`, `resnet101`, and `resnet152`.
 
-## Instructions to create the image-based knowledge graph
-
-TODO: Details will be added as the project progresses.
 
 ## Instructions to query an image-based knowledge graph
 
@@ -59,3 +56,22 @@ python kg-query/query_embds.py -e /path/to/embeddings.npy -q /path/to/query.npy 
 - `q`: Path to the `npy` file containing the query's image embedding. This depicts the user's input image's embeddings.
 - `l`: Number of points at which to switch to brute-force for the KDTree algorithm.
 - `d`: The distance metric to use for querying the KDTree.
+
+
+### Get a ranked list of images
+
+Run the following command to get a ranked list of images
+
+```python
+python kg_query/main.py --d /path/to/directory/containing/embeddings
+```
+
+## Instructions to use the API
+
+Save the embeddings of the dataset to `/scratch/sid/dataset/`. Run the following command
+
+```python
+python -m website_demo.wsgi
+```
+
+This will open a webpage where you an upload an image of your choice to query the dataset.
