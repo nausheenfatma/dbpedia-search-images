@@ -9,19 +9,12 @@ import numpy as np
 from tqdm import tqdm
 
 from .query_embds import QueryEmbds
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    '-d',
-    default='/scratch/sid/dataset_embeddings',
-    help='Path to the directory containing the embeddings',
-)
-args = parser.parse_args()
+from img_models.generate_features import ImgFeatures
 
 
 class RankedList():
     def __init__(self):
+        self.imgemb = ImgFeatures()
         self.embeddings, self.img_paths, self.uris_list = self.get_lists()
 
     def load_dict(self, dict_):
@@ -138,8 +131,29 @@ class RankedList():
             uris_ranked_list.append(self.uris_list[pred])
         return images_ranked_list[:10], uris_ranked_list[:10]
 
+    def generate_img_results(self, image_path):
+        print('Querying the embeddings from the image loaded...')
+        queryembd = QueryEmbds(self.embeddings)
+        print('Generating embeddings for the query image...')
+        query_img_embd = self.imgemb.get_features(image_path)
+        _, ind = queryembd.query(query_img_embd.detach().cpu())
+        print('Generating the ranked list...')
+        images_ranked_list = list()
+        uris_ranked_list = list()
+        for pred in ind[0]:
+            images_ranked_list.append(self.img_paths[pred])
+            uris_ranked_list.append(self.uris_list[pred])
+        return images_ranked_list[:10], uris_ranked_list[:10]
+
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-d',
+        default='/scratch/sid/dataset_embeddings',
+        help='Path to the directory containing the embeddings',
+    )
+    args = parser.parse_args()
     ranked_list = RankedList()
     images_ranked_list, uris_ranked_list = ranked_list.generate_results(0)
     print(images_ranked_list[:10])
